@@ -21,6 +21,11 @@ shapiro_wilk_test <- function(...) {
   
   # ---------------------------------------------------------
   if (is.null(data)) stop("Input data is null")
+  if (!is.numeric(data)) stop("Data must be a numeric vector.")
+  if (any(is.na(data))) stop("Data contains NA values.")
+  if (any(is.infinite(data))) stop("Data contains infinite values.")
+  if (length(data) < 3) stop("Data must contain at least three values.")
+  
 
   # Perform the Shapiro-Wilk test
   test_result <- shapiro.test(data)
@@ -52,4 +57,39 @@ result1 <- shapiro_wilk_test(sample_data1, disp_qqplot = TRUE)
 set.seed(500)
 sample_data2 <- rnorm(5000)
 result2 <- shapiro_wilk_test(sample_data2, disp_qqplot = TRUE)
+
+
+##--------------------------------------------------------------------
+# Catches errors 
+# Test 3: Data with NA values
+sample_data3 <- c(1.2, 2.3, NA, 4.5)
+tryCatch({
+  result3 <- shapiro_wilk_test(sample_data3)
+}, error = function(e) {
+  print(paste("Error: ", e$message))
+})
+
+# Test 4: Data with infinite values
+sample_data4 <- c(1.2, 2.3, Inf, 4.5)
+tryCatch({
+  result4 <- shapiro_wilk_test(sample_data4)
+}, error = function(e) {
+  print(paste("Error: ", e$message))
+})
+
+# Test 5: Data with wrong format (non-numeric)
+sample_data5 <- c("a", "b", "c")
+tryCatch({
+  result5 <- shapiro_wilk_test(sample_data5)
+}, error = function(e) {
+  print(paste("Error: ", e$message))
+})
+
+# Test 6: Data with less than three values
+sample_data6 <- c(1.2, 2.3)
+tryCatch({
+  result6 <- shapiro_wilk_test(sample_data6)
+}, error = function(e) {
+  print(paste("Error: ", e$message))
+})
 
