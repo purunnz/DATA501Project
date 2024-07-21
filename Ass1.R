@@ -1,9 +1,27 @@
 # Load library 
 library(ggplot2)
+library(testthat)
 
 # Define the custom function
-shapiro_wilk_test <- function(data, dis_qqplot = FALSE) {
+# A.at least two inputs (1 required and 1 default/optional)
+# shapiro_wilk_test <- function(data, disp_qqplot = FALSE) {
+shapiro_wilk_test <- function(...) {
   
+  # B.Input validation
+  # Check the number of parameters
+  args <- list(...)
+
+  if (length(args) < 1 || length(args) > 2) {
+    stop("The function requires 1 or 2 parameters: data (required) and disp_qqplot (optional).")
+  }
+
+  # Assign arguments to variables
+  data <- args[[1]]
+  disp_qqplot <- ifelse(length(args) == 2, args[[2]], FALSE)
+  
+  # ---------------------------------------------------------
+  if (is.null(data)) stop("Input data is null")
+
   # Perform the Shapiro-Wilk test
   test_result <- shapiro.test(data)
   
@@ -11,7 +29,7 @@ shapiro_wilk_test <- function(data, dis_qqplot = FALSE) {
   print(test_result)
   
   # qq plot 
-  if (dis_qqplot) {
+  if (disp_qqplot) {
     # QQplot of normally distributed values
     qqnorm(data)
     # Add qqline to plot
@@ -23,21 +41,15 @@ shapiro_wilk_test <- function(data, dis_qqplot = FALSE) {
   return(test_result)
 }
 
-# 1: Load data
-sample_data <- c(4.2, 5.3, 6.1, 7.4, 8.0, 4.8, 5.9, 6.2, 7.5, 5.7)
+##--------------------------------------------------------------------
+# Basic/simple Tests
+# Test 1: Normal data without QQ-plot
+sample_data1 <- c(4.2, 5.3, 6.1, 7.4, 8.0, 4.8, 5.9, 6.2, 7.5, 5.7)
+result1 <- shapiro_wilk_test(sample_data1)
+result1 <- shapiro_wilk_test(sample_data1, disp_qqplot = TRUE)
 
+# Test 2: Normal data with QQ-plot
 set.seed(500)
-# Create random normally distributed values
-sample_datan <- rnorm(100)
-
-# Create random uniformlly distributed values
-sample_datau <- runif(100)
-
-
-# 2: Perform the Shapiro-Wilk test & qqplot 
-shapiro_test_result <- shapiro_wilk_test(sample_data, dis_qqplot = TRUE)
-shapiro_test_result <- shapiro_wilk_test(sample_datan, dis_qqplot = TRUE)
-shapiro_test_result <- shapiro_wilk_test(sample_datau, dis_qqplot = TRUE)
-
-
+sample_data2 <- rnorm(5000)
+result2 <- shapiro_wilk_test(sample_data2, disp_qqplot = TRUE)
 
