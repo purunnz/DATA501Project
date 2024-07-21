@@ -93,3 +93,28 @@ tryCatch({
   print(paste("Error: ", e$message))
 })
 
+
+##--------------------------------------------------------------------
+# Develop the tests 
+# usethis::use_testthat()
+test_that("Test3 NA values", {
+  sample_data3 <- c(1.2, 2.3, NA, 4.5)
+  expect_error(shapiro_wilk_test(sample_data3), "Data contains NA values.") 
+})
+
+test_that("Test4 infinite values", {
+  sample_data4 <- c(1.2, 2.3, Inf, 4.5)
+  expect_error(shapiro_wilk_test(sample_data4), "Data contains infinite values.") 
+})
+
+test_that("Test5 wrong format", {
+  sample_data5 <- c("a", "b", "c")
+  expect_error(shapiro_wilk_test(sample_data5), "Data must be a numeric vector.") 
+})
+
+test_that("Test6 error", {
+  sample_data6 <- c(1.2, 2.3)
+  expect_error(shapiro_wilk_test(sample_data6), "Data must contain at least three values.") 
+})
+
+
