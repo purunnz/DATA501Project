@@ -1,6 +1,7 @@
 # Load library 
 library(ggplot2)
 library(testthat)
+library(MASS)
 
 # Define the custom function
 # A.at least two inputs (1 required and 1 default/optional)
@@ -10,11 +11,11 @@ shapiro_wilk_test <- function(...) {
   # B.Input validation
   # Check the number of parameters
   args <- list(...)
-
+  
   if (length(args) < 1 || length(args) > 2) {
     stop("The function requires 1 or 2 parameters: data (required) and disp_qqplot (optional).")
   }
-
+  
   # Assign arguments to variables
   data <- args[[1]]
   disp_qqplot <- ifelse(length(args) == 2, args[[2]], FALSE)
@@ -27,11 +28,28 @@ shapiro_wilk_test <- function(...) {
   if (length(data) < 3) stop("Data must contain at least three values.")
   
 
-  # Perform the Shapiro-Wilk test
-  test_result <- shapiro.test(data)
+  # Order statistics
+  n <- length(data)
+  sorted_data <- sort(data)
+  
+  # Mean of the data
+  x_bar <- mean(data)
+  
+  # Coefficients for Shapiro-Wilk test
+  
+  a <- qnorm((1:n - 0.375) / (n + 0.25))
+  m <- mean(a)
+  a <- (a - m) / sd(a)
+  
+  # Calculate W
+  numerator <- sum(a * sorted_data)^2
+  denominator <- sum((data - x_bar)^2)
+  
+  W <- numerator / denominator
+  
   
   # Print the result
-  print(test_result)
+  print(W)
   
   # qq plot 
   if (disp_qqplot) {
@@ -43,7 +61,7 @@ shapiro_wilk_test <- function(...) {
   }
   
   # Return the test result
-  return(test_result)
+  return(W)
 }
 
 ##--------------------------------------------------------------------
