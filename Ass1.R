@@ -60,7 +60,7 @@ shapiro_wilk_test <- function(...) {
     
   }
   
-  # Return the test result
+  # Return the result
   return(W)
 }
 
