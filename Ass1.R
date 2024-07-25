@@ -27,7 +27,8 @@ shapiro_wilk_test <- function(...) {
   if (any(is.infinite(data))) stop("Data contains infinite values.")
   if (length(data) < 3) stop("Data must contain at least three values.")
   
-
+  # ---------------------------------------------------------
+  # Shapiro-Wilk logic 
   # Order statistics
   n <- length(data)
   sorted_data <- sort(data)
@@ -36,19 +37,18 @@ shapiro_wilk_test <- function(...) {
   x_bar <- mean(data)
   
   # Coefficients for Shapiro-Wilk test
-  
   a <- qnorm((1:n - 0.375) / (n + 0.25))
-  m <- mean(a)
-  a <- (a - m) / sd(a)
-  
+  a <- a / sqrt(sum(a^2))  
+  # m <- mean(a)
+  # a <- (a - m) / sd(a)
+
   # Calculate W
   numerator <- sum(a * sorted_data)^2
   denominator <- sum((data - x_bar)^2)
   
   W <- numerator / denominator
   
-  
-  # Print the result
+  # Print the Shapiro-Wilk statistic
   print(W)
   
   # qq plot 
@@ -60,7 +60,7 @@ shapiro_wilk_test <- function(...) {
     
   }
   
-  # Return the result
+  # Return the Shapiro-Wilk statistic
   return(W)
 }
 
@@ -69,12 +69,22 @@ shapiro_wilk_test <- function(...) {
 # Test 1: Normal data without QQ-plot
 sample_data1 <- c(4.2, 5.3, 6.1, 7.4, 8.0, 4.8, 5.9, 6.2, 7.5, 5.7)
 result1 <- shapiro_wilk_test(sample_data1)
+
+result0 <- shapiro.test(sample_data1)
+result0
+
 result1 <- shapiro_wilk_test(sample_data1, disp_qqplot = TRUE)
 
 # Test 2: Normal data with QQ-plot
 set.seed(500)
 sample_data2 <- rnorm(5000)
 result2 <- shapiro_wilk_test(sample_data2, disp_qqplot = TRUE)
+result2
+
+result20 <- shapiro.test(sample_data2)
+result20
+
+
 
 
 ##--------------------------------------------------------------------
